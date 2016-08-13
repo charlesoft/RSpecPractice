@@ -21,50 +21,39 @@ describe Card do
   end
 
   context 'equality' do
-    it 'is equal to itself' do
-      subject = card(suit: :spades, rank: 4)
-      other = card(suit: :spades,rank: 4)
+    subject { card(suit: :spades,rank: 4) }
+    let(:other) { card(suit: :spades,rank: 4) }
 
-      raise unless subject == other
+    describe 'comparing against it self' do
+      it 'is equal' do
+        raise unless subject == other
+      end
+
+      it 'its hash equal' do
+        raise unless Set.new([subject,other]).size == 1
+      end
     end
 
-    it 'its hash equal to itsef' do
-      subject = card(suit: :spades, rank: 4)
-      other = card(suit: :spades,rank: 4)
+    shared_examples_for 'an unequal card' do
+      it 'is not equal' do
+        raise unless subject != other
+      end
 
-      raise unless Set.new([subject,other]).size == 1
+      it 'its hash not equal' do
+        raise unless Set.new([subject,other]).size == 2
+      end
     end
 
     describe 'comparing to a card of different suit' do
-      it 'is not equal' do
-        subject = card(suit: :spades, rank: 4)
-        other = card(suit: :hearts,rank: 4)
+      let(:other) { card(suit: :hearts,rank: 5) }
 
-        raise unless subject != other
-      end
-
-      it 'its hash not equal' do
-        subject = card(suit: :spades, rank: 4)
-        other = card(suit: :hearts,rank: 4)
-
-        raise unless Set.new([subject,other]).size == 2
-      end
+      it_behaves_like 'an unequal card'
     end
 
     describe 'comparing to a card of different rank' do
-      it 'is not equal' do
-        subject = card(suit: :spades, rank: 4)
-        other = card(suit: :spades,rank: 5)
+      let(:other) { card(suit: :spades,rank: 5) }
 
-        raise unless subject != other
-      end
-
-      it 'its hash not equal' do
-        subject = card(suit: :spades, rank: 4)
-        other = card(suit: :spades,rank: 5)
-
-        raise unless Set.new([subject,other]).size == 2
-      end
+      it_behaves_like 'an unequal card'
     end
   end
 
