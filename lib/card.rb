@@ -40,4 +40,27 @@ class Card
     self == other
   end
 
+  def self.from_string(value)
+    # getting the final character in the string
+    short_suit = value[-1]
+
+    # Map it to suit
+    suit = {
+      "H" => :hearts,
+      "D" => :diamonds,
+      "S" => :spades,
+      "C" => :clubs
+    }.fetch(short_suit)
+
+    # Map reminder to a face card, or fallback to numeric
+    rank = {
+      'A' => :ace,
+      'K' => :king,
+      'Q' => :queen,
+      'J' => :jack
+    }.fetch(value[0]) { value[0..-2].to_i }
+
+    Card.build(suit,rank)
+  end
+
 end
