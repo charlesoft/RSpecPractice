@@ -16,7 +16,7 @@ class Card
     end
   end
 
-  def inspect
+  def to_s
     "<Card #{rank} #{suit}>"
   end
 
