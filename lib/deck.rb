@@ -14,4 +14,12 @@ class Deck
       Card.build(suit,rank)
     end
   end
+
+  def initialize
+    @card = self.class.all.shuffle
+  end
+
+  def deal(n)
+    @cards.shift(n)
+  end
 end

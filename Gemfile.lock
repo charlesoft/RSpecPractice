@@ -15,12 +15,14 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.3.0)
     rspec-support (3.3.0)
+    rubysl-pty (2.0.3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   rspec (~> 3.3.0)
+  rubysl-pty (~> 2.0.3)
 
 BUNDLED WITH
    1.12.5
