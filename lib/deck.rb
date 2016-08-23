@@ -16,7 +16,7 @@ class Deck
   end
 
   def initialize
-    @card = self.class.all.shuffle
+    @cards = self.class.all.shuffle
   end
 
   def deal(n)

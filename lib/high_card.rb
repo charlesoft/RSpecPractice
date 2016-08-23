@@ -1,4 +1,5 @@
 require 'card'
+require 'deck'
 require 'fileutils'
 
 module HighCard
@@ -10,15 +11,12 @@ module HighCard
   end
 
   class CLI
-    def self.run(seed=rand(100000), *args)
+    def self.run(seed=rand(100000), deck: Deck.new)
       Kernel.srand seed.to_i
 
       ranks = (7..10).to_a + [:jack, :queen, :king]
       suits = [:hearts, :clubs, :diamonds, :spades]
 
-      deck = ranks.product(suits).map do |rank, suit|
-        Card.build(suit, rank)
-      end.shuffle
 
       login = `whoami`.chomp
       bank = Bank.new(ENV.fetch('HIGHCARD_DIR', "/tmp/bank-accounts"))
@@ -28,8 +26,8 @@ module HighCard
         return
       end
 
-      hand     = deck.shift(5).sort_by(&:rank).reverse
-      opposing = deck.shift(5).sort_by(&:rank).reverse
+      hand     = deck.deal(5).sort_by(&:rank).reverse
+      opposing = deck.deal(5).sort_by(&:rank).reverse
       winning  = [hand, opposing]
         .sort_by {|h| h.map(&:rank).sort.reverse }
         .last
@@ -38,7 +36,7 @@ module HighCard
       print "Bet $1 to win? N/y: "
       start = Time.now
       input = $stdin.gets
-      if (input.chomp.downcase == "y") ^ (opposing == winning)
+      if Round.win?(input.chomp.downcase == "y", hand, opposing)
         puts "You won!"
         account.credit!(login, 1)
       else
@@ -48,6 +46,17 @@ module HighCard
       puts "Opposing hand was  #{opposing.join(", ")}"
       puts "Balance is #{account.balance}"
       puts "You took #{Time.now - start}s to make a decision."
+    end
+  end
+
+  class Round
+    def self.win?(bet,hand,opposing)
+      winning = [hand, opposing]
+        .sort_by {|h| h.map(&:rank).sort.reverse }
+        .last
+
+      bet && hand == winning || !bet && opposing == winning
+      # bet ^ (opposing == winning)
     end
   end
 

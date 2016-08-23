@@ -12,6 +12,19 @@ describe 'CLI', :acceptance do
     def balance; end
   end
 
+  class LowHandFirstDeck
+    def initialize
+      @cards =
+          [Card.build(:clubs, 7)] * 5 + # Weaker hand
+          [Card.build(:clubs, 8)] * 5 # Stronger hand
+    end
+
+    def shift(n)
+      @cards.shift(n)
+    end
+  end
+
+
   example 'not betting on losing hand' do
     # External dependencies
     allow(HighCard::CLI).to receive(:puts)
@@ -21,17 +34,13 @@ describe 'CLI', :acceptance do
       FakeAccount.new
       ])
 
-      # Set up states
-      allow(Card).to receive(:build).and_return(*
-        [Card.build(:clubs, 7)] * 5 + # Waker hand
-        [Card.build(:clubs, 8)] * 5  # Stronger hand
-      )
-
-      allow_any_instance_of(Array).to receive(:shuffle) { |x| x }
+      expect(HighCard::Round).to receive(:win?)
+        .with(false, any_args)
+        .and_return(true)
 
       expect($stdin).to receive(:gets).and_return("N")
       expect(HighCard::CLI).to receive(:puts).with("You won!")
 
-      HighCard::CLI.run
+      HighCard::CLI.run(1)
     end
   end
